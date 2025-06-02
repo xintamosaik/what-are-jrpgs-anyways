@@ -76,15 +76,17 @@ A 14-year-old with a browser and basic digital literacy can:
 ### Minimal Starter Plan
 
 1.  **Single Go App**
-    *   `main.go` → serves `localhost:3000` (Web UI)
-    *   Exposes initial API endpoints, including `GET /api/ping` returning `{ "message": "pong" }`, and an endpoint to serve placeholder HTML content.
+    *   `main.go` → serves `localhost:3000` (Web UI).
+    *   Serves static files (e.g., `index.html`, `style.css`, `script.js`) from a `./web/` directory.
+    *   Exposes an endpoint (`/tile_editor`) that serves placeholder HTML content.
+    *   *Planned:* An API endpoint `GET /api/ping` returning `{ "message": "pong" }`.
 
 2.  **Frontend**
-    *   A single `index.html` file for structure, a `style.css` for basic styling, and JavaScript (e.g., in `script.js` or inline) for interactivity.
+    *   A single `index.html` file for structure, a `style.css` for basic styling, and JavaScript (e.g., in `script.js` or inline) for interactivity, located in the `./web/` directory.
     *   Uses Fixi (vendored) for backend communication.
     *   Features:
-        *   A button that, when clicked, uses Fixi to request data/content from the Go backend.
-        *   The main content area is updated with the response received from the backend (e.g., placeholder HTML or a "pong" message).
+        *   A button that, when clicked, uses Fixi to request data/content from the Go backend (e.g., from the `/tile_editor` endpoint).
+        *   The main content area is updated with the response received from the backend.
 
 3.  **Shared Data (for near future)**
     *   A dummy shared file (e.g. `shared/data.json`) that the Go backend can read from and write to, demonstrating basic data handling.
@@ -130,11 +132,11 @@ A 14-year-old with a browser and basic digital literacy can:
 
 ## ✅ Next Actions
 
-1.  Finalize the single Go server (`main.go`) to robustly serve the static `index.html`, `style.css`, and any JavaScript files from a `/static` directory (or using `go:embed`).
-2.  Ensure Fixi is correctly vendored and integrated for the existing button-to-backend communication that replaces main content.
-3.  Implement a distinct `GET /api/ping` endpoint in `main.go` that returns `{ "message": "pong" }`. Add a new, separate button or mechanism in the frontend to specifically test this "ping" endpoint and display its response.
+1.  Ensure `main.go` robustly serves the static `index.html`, `style.css`, and any JavaScript files from the `./web/` directory. Consider migrating to `go:embed` for bundling static assets in the future.
+2.  Ensure Fixi is correctly vendored and integrated in the frontend (within `./web/`) for the existing button-to-backend communication that replaces main content (e.g., fetching from `/tile_editor`).
+3.  Implement the distinct `GET /api/ping` endpoint in `main.go` that returns `{ "message": "pong" }`. Add a new, separate button or mechanism in the frontend to specifically test this "ping" endpoint and display its response.
 4.  Create an initial `shared/data.json` file. Implement basic functionality in the Go backend to read from this file and potentially an endpoint for the frontend to fetch this data.
-5.  Document the current simplified architecture, the Fixi integration, and the end-to-end "ping" and content-loading flow in the logs and/or README.
+5.  Document the current architecture (single `main.go` serving `./web/`, Fixi integration, `/tile_editor` endpoint) and the planned end-to-end "ping" flow.
 6.  Begin planning the first interactive feature beyond basic content swapping, e.g., displaying content from `shared/data.json` or a very simple canvas interaction.
 
 ---
@@ -144,7 +146,7 @@ A 14-year-old with a browser and basic digital literacy can:
 ```
 /
   main.go                 # Single Go backend file
-/static/                  # For all static assets
+/web/                     # For all static assets served by main.go
   index.html              # Main HTML file
   style.css               # Main CSS file
   script.js               # Main JavaScript file (if not inline)
