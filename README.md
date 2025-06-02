@@ -1,146 +1,70 @@
-# Go Web RPG App
-Project Description: Web-Based Tile Editor for Grid-Centric Game Design
+# JRPG Maker: README
 
-Purpose To build a web-native, progressively-enhanced tool for creating tile-based maps and interactive scenes, initially focused on JRPG-style games. The tool will be designed to enable quick, zero-install play and gradual onboarding into deeper customization and self-hosting.
+## Project Description
 
-The broader vision is to empower young or novice creators to make games directly in the browser, while also enabling more advanced users to self-host and extend the system.
+A web-native, progressively-enhanced tool for creating tile-based maps and interactive scenes, initially focused on JRPG-style games. The tool is designed for quick, zero-install play and gradual onboarding into deeper customization and self-hosting.
 
-Cornerstone Concepts
+**Vision:**  
+Empower young or novice creators to make games directly in the browser, while enabling advanced users to self-host and extend the system.
 
-Spatial Primacy: All meaningful data (tiles, collisions, callbacks) is spatially indexed on a 2D grid.
-Tiles as Entities: Tiles can carry optional behavior, metadata, or interactivity; they act like ECS-style entities with optional subscriptions.
-Progressive Enhancement: Users should be able to click a link and start creating, with the option to deepen into login-based persistence, self-hosting, and collaboration.
-Dogfooding as Design: The tool is built for the creator to make games themselves first; community enablement is a secondary, but important, outcome.
-Initial Technical Stack
+---
 
-Frontend: React (tentatively), Tailwind CSS, shadcn/ui (for accessibility and UI polish).
-Backend: Golang (chosen for performance, static binaries, and low friction in deployment).
-Persistence: Likely Postgres with sqlc OR a NoSQL/document store; decision pending based on how rigid or flexible game data needs to be.
-Big Architectural Questions (to revisit)
+## Cornerstone Concepts
 
-Relational vs. Document Storage: Does the game world benefit more from schema-bound tables or fluid, composable documents?
-Frontend-Backend Contract: Should the UI tightly couple with backend models or stay loosely federated via API?
-Auth Model: What’s the simplest way to introduce authentication without creating deployment friction for self-hosters?
-Deployment Tiers: What’s the best way to enable hosted use and local installs (e.g., browser-only mode, installer packages, server distributions)?
-Initial User Scenario (Persona)
+- **Spatial Primacy:** All meaningful data (tiles, collisions, callbacks) is spatially indexed on a 2D grid.
+- **Tiles as Entities:** Tiles can carry optional behavior, metadata, or interactivity; they act like ECS-style entities.
+- **Progressive Enhancement:** Users can start creating instantly, with options for login-based persistence, self-hosting, and collaboration.
+- **Dogfooding as Design:** The tool is built for creators to make games themselves first; community enablement is secondary but important.
 
-A 14-year-old with a browser and basic digital literacy.
-Can upload tilesets, paint maps, and export to a format usable in simple game engines.
-May later ask for more storage, login features, or to collaborate with others.
-Should never be blocked by complex runtime, infrastructure, or technical vocabulary.
-Design Ethos
+---
 
-Be composable like UNIX tools.
-Be transparent like open source.
-Be responsive like a good game: feedback, agency, low-friction flow.
-This is not a platform; it’s a tool. But tools shape what we can make. And this one should help people start, continue, and maybe even finish their game.
+## Initial Technical Stack
 
---- 
+- **Frontend:** HTML+JS (React and Tailwind CSS planned)
+- **Backend:** Go (for performance, static binaries, and easy deployment)
+- **Persistence:** Postgres and/or NoSQL/JSON (decision pending)
 
-This project is a web application built with Go as the backend and HTML for the frontend. It allows users to send a "hello" message from the app to the game.
+---
 
-## Project Structure
+## Big Architectural Questions
 
-```
-go-web-rpg-app
-├── cmd
-│   └── server
-│       └── main.go        # Entry point of the application
-├── internal
-│   ├── app
-│   │   └── app.go         # Application logic
-│   └── game
-│       └── game.go        # Game-related functionality
-├── web
-│   ├── static
-│   │   └── style.css       # CSS styles for the frontend
-│   └── templates
-│       └── index.html      # Main HTML template for the frontend
-├── go.mod                  # Module definition for the Go application
-├── go.sum                  # Checksums for module dependencies
-└── README.md               # Documentation for the project
-```
+- Relational vs. Document Storage
+- Frontend-Backend Contract (tight vs. loose coupling)
+- Auth Model (simple, low-friction for self-hosters)
+- Deployment Tiers (hosted, local, browser-only, installer, server)
 
-## Setup Instructions
+---
 
-1. **Clone the repository:**
-   ```
-   git clone <repository-url>
-   cd go-web-rpg-app
-   ```
+## Initial User Scenario
 
-2. **Install dependencies:**
-   ```
-   go mod tidy
-   ```
+A 14-year-old with a browser and basic digital literacy can:
+- Upload tilesets
+- Paint maps
+- Export to a format usable in simple game engines
+- Never be blocked by complex runtime, infrastructure, or technical vocabulary
 
-3. **Run the application:**
-   ```
-   go run cmd/server/main.go
-   ```
+---
 
-4. **Access the application:**
-   Open your web browser and navigate to `http://localhost:8080` to interact with the app.
+## Design Ethos
 
-## Usage Guidelines
-
-- The application provides a simple interface to send a "hello" message to the game.
-- Responses from the game will be displayed on the frontend.
-- You can modify the application logic in `internal/app/app.go` and the game functionality in `internal/game/game.go` as needed.
-
-## Contributing
-
-Contributions are welcome! Please submit a pull request or open an issue for any enhancements or bug fixes.
-
-# JRPG Maker: Architecture & XP Plan
-
-This document synthesizes the architectural decisions, priorities, and next actions for the JRPG Maker project, based on the evolving discussion and feedback. It is intended as a living README for the early XP (eXtreme Programming) phase.
+- Be composable like UNIX tools
+- Be transparent like open source
+- Be responsive like a good game: feedback, agency, low-friction flow
+- This is a tool, not a platform—tools shape what we can make
 
 ---
 
 ## 🧭 High-Risk Decisions (Summary)
 
-**1. Runtime & Execution Model**
-- Web app, locally deployable or server-hosted.
-- Both always-on server and local/in-memory play.
-- Multiplayer is a goal from the start.
-
-**2. Rendering Technology**
-- Mostly HTML5 `<canvas>` for maps/tilesets.
-- DOM forms for UI/dialogs.
-- Layering, transitions, zoom, and selection are desired.
-
-**3. Data Format & Storage**
-- Postgres for some data, mostly NoSQL/JSON for game content.
-- Human-editable, hackable files preferred.
-- Versioning/migrations: open question.
-
-**4. Modularity vs Monolith**
-- Editor and game engine are separate.
-- Games can be exported and self-hosted.
-- Plugin boundaries are to be defined early.
-
-**5. Scripting / Custom Logic**
-- JS for scripting, possibly with a visual editor.
-- Scripts interpreted, not compiled.
-- Sandboxing is a future concern.
-
-**6. Pathfinding & World Topology**
-- Layered maps, ECS-like logic.
-- Scenes as maps, with teleporters/edges.
-
-**7. Save/Load/Game State**
-- Prefer backend state, minimal frontend state.
-- Serialization and crash recovery are open questions.
-
-**8. Editor Architecture**
-- Editor and game are separate, possibly in different tabs or iframes.
-- Drag-and-drop, tile painting, and hot reload are goals.
-
-**9. Distribution & Deployment**
-- GitHub Releases for binaries.
-- Offline support is a goal.
-- Asset packs/mods/DLC are planned.
+1. **Runtime & Execution Model:** Web app, locally deployable or server-hosted, multiplayer by default.
+2. **Rendering Technology:** HTML5 `<canvas>` for maps/tilesets, DOM for forms/dialogs, layering/zoom/selection desired.
+3. **Data Format & Storage:** Postgres for some data, mostly NoSQL/JSON, human-editable files, versioning TBD.
+4. **Modularity vs Monolith:** Editor and game engine are separate, plugin boundaries defined early.
+5. **Scripting / Custom Logic:** JS scripting (possibly visual), interpreted, sandboxing is a future concern.
+6. **Pathfinding & World Topology:** Layered maps, ECS-like logic, scenes as maps.
+7. **Save/Load/Game State:** Prefer backend state, minimal frontend state, serialization/crash recovery TBD.
+8. **Editor Architecture:** Editor and game are separate (tabs/iframes), drag-and-drop, tile painting, hot reload.
+9. **Distribution & Deployment:** GitHub Releases, offline support, asset packs/mods/DLC planned.
 
 ---
 
@@ -167,33 +91,20 @@ This document synthesizes the architectural decisions, priorities, and next acti
 
 ## 🧩 Architectural Guidance
 
-### Multiplayer by Design
-- Design all game logic as if networked, even if not implemented yet.
-- Use action dispatching (`game.dispatch({ type: "MOVE", ... })`) instead of direct state mutation.
-- This enables logging, syncing, replay, and future multiplayer.
-
-### Plugin Boundaries
-- Define Go interfaces for backend plugins, even if only one implementation exists.
-- Frontend can use a plugin registry pattern.
-- Dynamic loading can come later; focus on clear seams now.
-
-### Scripting & Sandboxing
-- User JS scripts will be part of the game.
-- For now, use a stub like `evalThis(script, context)` and add a TODO for sandboxing.
-- In the future, consider iframes, Web Workers, or server-side isolation.
+- **Multiplayer by Design:**  
+  Design all game logic as if networked (action dispatching, not direct state mutation).
+- **Plugin Boundaries:**  
+  Define Go interfaces for backend plugins and a plugin registry pattern for frontend.
+- **Scripting & Sandboxing:**  
+  Use a stub like `evalThis(script, context)` for now; plan for sandboxing later.
 
 ---
 
 ## 🔍 Tech Spikes (Next 1–2 Weeks)
 
-- **Go Embed & Packaging:**  
-  Use `go:embed` for static files, test multi-platform builds.
-
-- **Canvas Layering & Input:**  
-  Prototype canvas layers (background, sprite, UI), add zoom/selection.
-
-- **Simple Save/Load:**  
-  Minimal map in editor, save/load as JSON, verify handoff between editor/game/backend.
+- **Go Embed & Packaging:** Use `go:embed` for static files, test multi-platform builds.
+- **Canvas Layering & Input:** Prototype canvas layers, add zoom/selection.
+- **Simple Save/Load:** Minimal map in editor, save/load as JSON, verify handoff between editor/game/backend.
 
 ---
 
@@ -209,14 +120,9 @@ This document synthesizes the architectural decisions, priorities, and next acti
 
 ## ❗ Risk Hotspots
 
-- **Multiplayer:**  
-  Isolate game state logic so it can be swapped for networked sync later.
-
-- **Plugin System:**  
-  Define interfaces and boundaries early, even if not dynamic yet.
-
-- **Sandboxing:**  
-  Plan for user script isolation, but don't block progress now.
+- **Multiplayer:** Isolate game state logic for future networked sync.
+- **Plugin System:** Define interfaces and boundaries early.
+- **Sandboxing:** Plan for user script isolation, but don't block progress now.
 
 ---
 
@@ -247,6 +153,16 @@ This document synthesizes the architectural decisions, priorities, and next acti
     game.js
 /README.md
 ```
+
+---
+
+## 🚦 Minimal XP Step: End-to-End "Ping"
+
+**Goal:**  
+Have a Go server serve a static HTML file with a button. When clicked, the button sends a request to `/api/ping`, and the server responds with `"pong"`. The response is shown in the browser.
+
+**Why?**  
+This proves your backend, frontend, and API contract all work—end-to-end.
 
 ---
 
