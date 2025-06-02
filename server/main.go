@@ -1,14 +1,25 @@
 package main
 
 import (
-	"encoding/json"
+
 	"fmt"
 	"net/http"
 )
 
-func pingHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{"message": "pong"})
+// it will serve html 
+func tile_editor(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+	w.Header().Set("Cache-Control", "no-store")
+	html := `
+<div>
+<h1>Tile Editor</h1>
+</div>
+`
+
+	// Serve the HTML content as a response
+	fmt.Fprint(w, html)
+	
+
 }
 func noCache(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -19,12 +30,11 @@ func noCache(next http.Handler) http.Handler {
 
 func main() {
 
-		fs := http.StripPrefix("/", http.FileServer(http.Dir("./web/")))
-		http.Handle("/", noCache(fs))
-
+	fs := http.StripPrefix("/", http.FileServer(http.Dir("./web/")))
+	http.Handle("/", noCache(fs))
 
 	// API route
-	http.HandleFunc("/hello", pingHandler)
+	http.HandleFunc("/tile_editor", tile_editor)
 
 	fmt.Println("Starting server on :3000")
 	if err := http.ListenAndServe(":3000", nil); err != nil {
