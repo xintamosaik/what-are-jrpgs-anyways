@@ -5,23 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Go Web RPG App</title>
     <link rel="stylesheet" href="/style.css">
+    <script src="fixi-0.6.5.js"></script>
 </head>
 <body>
     <h1>Welcome to the Go Web RPG App</h1>
-    <button id="sendHello">Send Hello</button>
-    <div id="response"></div>
+
+
+    <main id="ui">
+        <button fx-action="hello">Hello</button>
+        <button fx-action="ping">Tile Editor</button>
+        
+        <button fx-action="ping">Entity Editor</button>
+        
+
+    </main>
 
     <script>
-        document.getElementById('sendHello').addEventListener('click', function() {
-            fetch('/hello')
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById('response').innerText = data;
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-        });
+
     </script>
 </body>
 </html>
