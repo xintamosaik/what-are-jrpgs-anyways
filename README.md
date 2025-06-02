@@ -20,9 +20,9 @@ Empower young or novice creators to make games directly in the browser, while en
 
 ## Initial Technical Stack
 
-- **Frontend:** HTML+JS (React and Tailwind CSS planned)
-- **Backend:** Go (for performance, static binaries, and easy deployment)
-- **Persistence:** Postgres and/or NoSQL/JSON (decision pending)
+- **Frontend:** HTML, CSS, JavaScript. Initially, this will be a single `index.html`, a single `style.css`, and JavaScript (either inline or a single `script.js`). We are using Fixi (vendored) for client-server communication. (React and Tailwind CSS are planned for later, as the project grows).
+- **Backend:** Go. Initially, this will be a single `main.go` file. (Chosen for performance, static binaries, and easy deployment).
+- **Persistence:** Postgres and/or NoSQL/JSON (decision pending).
 
 ---
 
@@ -71,21 +71,23 @@ A 14-year-old with a browser and basic digital literacy can:
 ## 🏁 Immediate XP Slice: What to Build First
 
 **Goal:**  
-*An empty app and an empty game that send "hello" to each other, running as two Go binaries with two UIs.*
+*A single Go application serving a web UI. The UI will have a button that communicates with the backend via Fixi to fetch and display data or content.*
 
 ### Minimal Starter Plan
 
-1. **Two Go Apps**
-    - `editor.go` → serves `localhost:3000` (Editor UI)
-    - `game.go` → serves `localhost:3001` (Game UI)
-    - Each exposes `GET /api/ping` returning `{ "message": "pong" }`
+1.  **Single Go App**
+    *   `main.go` → serves `localhost:3000` (Web UI)
+    *   Exposes initial API endpoints, including `GET /api/ping` returning `{ "message": "pong" }`, and an endpoint to serve placeholder HTML content.
 
-2. **Frontend**
-    - Editor: HTML+JS canvas + button, sends ping to backend, displays response.
-    - Game: HTML+JS canvas, shows a moving shape, same ping cycle.
+2.  **Frontend**
+    *   A single `index.html` file for structure, a `style.css` for basic styling, and JavaScript (e.g., in `script.js` or inline) for interactivity.
+    *   Uses Fixi (vendored) for backend communication.
+    *   Features:
+        *   A button that, when clicked, uses Fixi to request data/content from the Go backend.
+        *   The main content area is updated with the response received from the backend (e.g., placeholder HTML or a "pong" message).
 
-3. **Shared Data**
-    - Dummy shared file (e.g. `shared/map.json`) both backends can read/write.
+3.  **Shared Data (for near future)**
+    *   A dummy shared file (e.g. `shared/data.json`) that the Go backend can read from and write to, demonstrating basic data handling.
 
 ---
 
@@ -128,29 +130,29 @@ A 14-year-old with a browser and basic digital literacy can:
 
 ## ✅ Next Actions
 
-1. Scaffold two Go servers (`editor.go`, `game.go`) serving static UIs.
-2. Implement `/api/ping` endpoint in both.
-3. Create minimal HTML+JS UIs for each, with canvas and ping button.
-4. Add a shared JSON file for future data handoff.
-5. Document the round-trip "hello" flow in logs.
+1.  Finalize the single Go server (`main.go`) to robustly serve the static `index.html`, `style.css`, and any JavaScript files from a `/static` directory (or using `go:embed`).
+2.  Ensure Fixi is correctly vendored and integrated for the existing button-to-backend communication that replaces main content.
+3.  Implement a distinct `GET /api/ping` endpoint in `main.go` that returns `{ "message": "pong" }`. Add a new, separate button or mechanism in the frontend to specifically test this "ping" endpoint and display its response.
+4.  Create an initial `shared/data.json` file. Implement basic functionality in the Go backend to read from this file and potentially an endpoint for the frontend to fetch this data.
+5.  Document the current simplified architecture, the Fixi integration, and the end-to-end "ping" and content-loading flow in the logs and/or README.
+6.  Begin planning the first interactive feature beyond basic content swapping, e.g., displaying content from `shared/data.json` or a very simple canvas interaction.
 
 ---
 
 ## 📁 Suggested Folder Structure
 
 ```
-/server/
-  editor.go
-  game.go
+/
+  main.go                 # Single Go backend file
+/static/                  # For all static assets
+  index.html              # Main HTML file
+  style.css               # Main CSS file
+  script.js               # Main JavaScript file (if not inline)
+/vendor/
+  fixi/                   # Vendored Fixi library files
+    fixi.min.js           # (or however Fixi is structured)
 /shared/
-  map.json
-/ui/
-  editor/
-    index.html
-    editor.js
-  game/
-    index.html
-    game.js
+  data.json               # Dummy shared data file (for future use)
 /README.md
 ```
 
@@ -169,5 +171,3 @@ This proves your backend, frontend, and API contract all work—end-to-end.
 ## 💡 Want a Ready-to-Run Scaffold?
 
 If you want, I can generate a starter repo structure with Go code, HTML, and JS for this XP slice. Just ask!
-
----
