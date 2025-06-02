@@ -1,4 +1,41 @@
 # Go Web RPG App
+Project Description: Web-Based Tile Editor for Grid-Centric Game Design
+
+Purpose To build a web-native, progressively-enhanced tool for creating tile-based maps and interactive scenes, initially focused on JRPG-style games. The tool will be designed to enable quick, zero-install play and gradual onboarding into deeper customization and self-hosting.
+
+The broader vision is to empower young or novice creators to make games directly in the browser, while also enabling more advanced users to self-host and extend the system.
+
+Cornerstone Concepts
+
+Spatial Primacy: All meaningful data (tiles, collisions, callbacks) is spatially indexed on a 2D grid.
+Tiles as Entities: Tiles can carry optional behavior, metadata, or interactivity; they act like ECS-style entities with optional subscriptions.
+Progressive Enhancement: Users should be able to click a link and start creating, with the option to deepen into login-based persistence, self-hosting, and collaboration.
+Dogfooding as Design: The tool is built for the creator to make games themselves first; community enablement is a secondary, but important, outcome.
+Initial Technical Stack
+
+Frontend: React (tentatively), Tailwind CSS, shadcn/ui (for accessibility and UI polish).
+Backend: Golang (chosen for performance, static binaries, and low friction in deployment).
+Persistence: Likely Postgres with sqlc OR a NoSQL/document store; decision pending based on how rigid or flexible game data needs to be.
+Big Architectural Questions (to revisit)
+
+Relational vs. Document Storage: Does the game world benefit more from schema-bound tables or fluid, composable documents?
+Frontend-Backend Contract: Should the UI tightly couple with backend models or stay loosely federated via API?
+Auth Model: What’s the simplest way to introduce authentication without creating deployment friction for self-hosters?
+Deployment Tiers: What’s the best way to enable hosted use and local installs (e.g., browser-only mode, installer packages, server distributions)?
+Initial User Scenario (Persona)
+
+A 14-year-old with a browser and basic digital literacy.
+Can upload tilesets, paint maps, and export to a format usable in simple game engines.
+May later ask for more storage, login features, or to collaborate with others.
+Should never be blocked by complex runtime, infrastructure, or technical vocabulary.
+Design Ethos
+
+Be composable like UNIX tools.
+Be transparent like open source.
+Be responsive like a good game: feedback, agency, low-friction flow.
+This is not a platform; it’s a tool. But tools shape what we can make. And this one should help people start, continue, and maybe even finish their game.
+
+--- 
 
 This project is a web application built with Go as the backend and HTML for the frontend. It allows users to send a "hello" message from the app to the game.
 
