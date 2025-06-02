@@ -21,11 +21,15 @@ Good question. simple object storage like AWS does but far less complex?
 ## Next Steps Questions
 
 6. **Immediate Task**: Based on the answers about prioritization, would you like to focus next on:
-   - Setting up the React+Vite frontend
-   - Implementing basic tileset upload/display
-   - Creating the map editor canvas
-   - Something else?
+> - Setting up the React+Vite frontend
+I will probably, yeah
+> - Implementing basic tileset upload/display
+After vite
+- Creating the map editor canvas
+In react
+- Something else?
+That is it for now.
 
 7. **Development Workflow**: Would a basic README update with setup instructions (Go, Node/npm, running the servers) be helpful as a next step?
+Not yet. That is too detailed for now. There will be loads of changes.
 
-These questions should help clarify the immediate implementation path forward!
