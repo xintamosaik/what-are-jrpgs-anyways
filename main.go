@@ -11,7 +11,8 @@ func tile_editor(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", "no-store")
 	html := `
 <div>
-<h1>Tile Editor</h1>
+<h1>Tile Editor!</h1>
+<p>Welcome to the Tile Editor!</p>
 </div>
 `
 
