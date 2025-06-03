@@ -6,17 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JRPGMAKER</title>
     <link rel="stylesheet" href="/style.css">
-
-</head>
-
-<body>
-    <main id="ui">
-        <h1>JRPG Maker</h1>
-
-
-
-
-    </main>
     <script>
         async function askForFilesAndFoldersInUploads() {
             try {
@@ -30,9 +19,50 @@
             }
         }
 
-        askForFilesAndFoldersInUploads().then(data => {
-            console.log("Files and folders in uploads:", data);
-        });
+        const extensionEmokis = {
+            "png": "🖼️",
+            "jpg": "🖼️",
+            "jpeg": "🖼️",
+            "gif": "🎨",
+            "mp3": "🎵",
+            "wav": "🎵",
+            "ogg": "🎵",
+            "txt": "📄",
+            "json": "📄",
+            "html": "🌐",
+            "folder": "📁",
+            // Add more extensions and their emojis as needed
+        };
+        function refreshUploads(event) {
+            event.preventDefault();
+            askForFilesAndFoldersInUploads().then(data => {
+                const uploadsDiv = document.getElementById("uploadList");
+                uploadsDiv.innerHTML = ""; // Clear previous content
+
+                const folders = data.folders || [];
+                const files = data.files || [];
+
+                folders.forEach(folder => {
+                    const folderElement = document.createElement("button");
+                    folderElement.textContent = `${extensionEmokis["folder"]} ${folder}`;
+             
+
+                    uploadsDiv.appendChild(folderElement);
+                });
+
+                files.forEach(file => {
+                    const fileElement = document.createElement("button");
+                    const extension = file.split('.').pop().toLowerCase();
+                    if (extensionEmokis[extension]) {
+                        fileElement.textContent = `${extensionEmokis[extension]} ${file}`;
+                    } else {
+                        fileElement.textContent = `📄 ${file}`; // Default emoji for unknown extensions
+                    }
+                    
+                    uploadsDiv.appendChild(fileElement);
+                });
+            });
+        }
         /**
          * Asks the backend for an image file.
          * @param {string} filename - The name of the image file to request.
@@ -54,17 +84,24 @@
             }
         }
 
-        askForImage("1_Interiors/48x48/Room_Builder_48x48.png").then(blob => {
-            if (blob) {
-                const img = document.createElement("img");
-                img.alt = "Room Builder 48x48";
-                img.style.maxWidth = "100%"; // Ensure the image fits within the container
-                img.style.height = "auto"; // Maintain aspect ratio
-                img.src = URL.createObjectURL(blob);
-                document.getElementById("ui").appendChild(img);
-            }
-        });
+
     </script>
+</head>
+
+<body>
+    <main id="ui">
+        <div id="uploads">
+
+
+            <h1>Uploads</h1>
+            <button type="button" onclick="refreshUploads(event)" title="Refresh uploads list"
+                aria-label="Refresh uploads list">
+                root
+            </button>
+            <div id="uploadList"></div>
+        </div>
+    </main>
+
 </body>
 
 </html>
