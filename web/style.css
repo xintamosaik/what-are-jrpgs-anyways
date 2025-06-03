@@ -5,8 +5,11 @@ body {
 
 button {
     border: 2px solid transparent;
-    padding: 10px 20px;
+    padding: 2ch 4ch;
+    font-weight: bold;
+    border-radius: 4px;
     cursor: pointer;
+    transition: border-color 0.3s ease;
 }
 
 button:hover {
