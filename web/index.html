@@ -4,35 +4,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Go Web RPG App</title>
+    <title>JRPGMAKER</title>
     <link rel="stylesheet" href="/style.css">
     <script src="fixi-0.6.5.js"></script>
 </head>
 
 <body>
-
-    
-    <!-- fx-action="/content" -- URL to issue request to -->
-    <!-- fx-method="get"      -- HTTP Method to use -->
-    <!-- fx-trigger="click"   -- Event that triggers the request -->
-    <!-- fx-target="#output"  -- Element to swap -->
-    <!-- fx-swap="innerHTML"> -- How to swap -->
- 
-
     <main id="ui">
+        <h1>JRPG Maker</h1>
         
+        
+
+
+    </main>
+    <div id="fixitests">
         <button fx-action="tile_editor" fx-target="#output" fx-swap="innerHTML">Tile Editor</button>
-    
+
         <div id="output">
             <p>Click a button to see the response here.</p>
             <p>Use the browser's developer tools to see the network requests.</p>
         </div>
-
-    </main>
-
-    <script>
-
-    </script>
+    </div>
 </body>
 
 </html>
