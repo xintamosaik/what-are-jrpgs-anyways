@@ -4,6 +4,7 @@ import FileListing from './FileListing.vue';
 
 interface FolderProps {
   folder: string;
+  basePath?: string;
 }
 
 const opened = ref(false);
@@ -28,7 +29,10 @@ const handleFolderClick = () => {
       v-if="opened" 
       class="folder-content"
     >
-      <FileListing :folder="props.folder" />
+      <FileListing 
+        :folder="props.folder"
+        :base-path="props.basePath"
+      />
     </div>
   </div>
 </template>

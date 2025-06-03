@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import FolderNode from './FolderNode.vue';
 
 interface UploadResponse {
@@ -15,6 +15,7 @@ interface ExtensionCallbacks {
 
 const props = defineProps<{
   folder?: string;
+  basePath?: string;  // Add this prop
 }>();
 
 const uploads = ref<UploadResponse>({ folders: [], files: [] });
@@ -48,10 +49,15 @@ const getEmoji = (extension: string): string => {
   return extensionEmojis[extension] || "";
 };
 
+const currentPath = computed(() => {
+  if (!props.folder) return '';
+  return props.basePath ? `${props.basePath}/${props.folder}` : props.folder;
+});
+
 async function refreshUploads(): Promise<void> {
   try {
-    // Modify the fetch URL to include the folder path if provided
-    const url = props.folder ? `/list_uploads?folder=${props.folder}` : "/list_uploads";
+    const path = props.folder ? currentPath.value : '';
+    const url = path ? `/list_uploads?folder=${encodeURIComponent(path)}` : "/list_uploads";
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -80,6 +86,7 @@ onMounted(() => {
       v-for="folder in uploads.folders"
       :key="folder"
       :folder="folder"
+      :base-path="currentPath"
     />
     
     <button

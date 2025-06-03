@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"path/filepath"
+	"strings"
 )
 
 // Define a struct for our JSON response
@@ -41,11 +43,14 @@ func create_files_and_folders_json(list []os.DirEntry) (string, error) {
 
 // tile_editor serves the tile editor HTML page.
 func list_uploads(w http.ResponseWriter, r *http.Request) {
-	// json
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Cache-Control", "no-store")
 
-	list := list_files_and_folders_of_directory("")
+	// Get the folder parameter from query string
+	folder := r.URL.Query().Get("folder")
+
+	// List files for the requested folder
+	list := list_files_and_folders_of_directory(folder)
 	if list == nil {
 		http.Error(w, `{"error": "Error reading uploads directory"}`, http.StatusInternalServerError)
 		return
@@ -68,59 +73,48 @@ func noCache(next http.Handler) http.Handler {
 	})
 }
 
-// // filter_list_of_files_for_extension returns a filtered list of files that match the given extension.
-// func filter_list_of_files_for_extension(list []os.DirEntry, extension string) []os.DirEntry {
-// 	var filtered []os.DirEntry
-// 	for _, file := range list {
-// 		if file.IsDir() {
-// 			continue // Skip directories
-// 		}
-// 		if len(file.Name()) >= len(extension) && file.Name()[len(file.Name())-len(extension):] == extension {
-// 			filtered = append(filtered, file)
-// 		}
-// 	}
-// 	return filtered
-// }
-
 // list_files_and_folders_of_directory returns a list of files and folders in a given directory.
 // It prevents directory traversal attacks by disallowing double points and other unsafe characters.
 // The subdir parameter specifies the subdirectory to list files from. If empty, it lists the root directory.
 func list_files_and_folders_of_directory(subdir string) []os.DirEntry {
 	basedir := "./uploads/"
 
-	// We prevent traversal attacks by searching the whole string for double points
-	if len(subdir) > 0 && subdir[0] == '/' {
-		fmt.Println("Error: Subdirectory cannot start with a slash.")
-		return nil
-	}
-
-	if len(subdir) > 0 && subdir[len(subdir)-1] == '/' {
-		fmt.Println("Error: Subdirectory cannot end with a slash.")
-		return nil
-	}
-	// Double points are never allowed. We search the string with a loop
-	for _, char := range subdir {
-		if char == '.' {
-			fmt.Println("Error: Subdirectory cannot contain double points.")
-			return nil
-		}
-		if char == '\\' {
-			fmt.Println("Error: Subdirectory cannot contain backslashes.")
-			return nil
-		}
-
-		if char == ':' {
-			fmt.Println("Error: Subdirectory cannot contain colons.")
-			return nil
-		}
-		if char == '*' || char == '?' || char == '"' || char == '<' || char == '>' || char == '|' {
-			fmt.Println("Error: Subdirectory cannot contain invalid characters.")
-			return nil
-		}
-	}
-
+	// Basic path sanitization
 	if subdir != "" {
-		basedir += subdir
+		// Remove leading and trailing slashes
+		subdir = strings.Trim(subdir, "/")
+
+		// Check for path traversal attempts
+		if strings.Contains(subdir, "..") {
+			fmt.Println("Error: Path traversal attempt detected")
+			return nil
+		}
+
+		// Check for invalid characters
+		if strings.ContainsAny(subdir, "\\:*?\"<>|") {
+			fmt.Println("Error: Invalid characters in path")
+			return nil
+		}
+
+		basedir = filepath.Join(basedir, subdir)
+	}
+
+	// Check if the resulting path is still within uploads directory
+	absPath, err := filepath.Abs(basedir)
+	if err != nil {
+		fmt.Println("Error resolving path:", err)
+		return nil
+	}
+
+	absUploads, err := filepath.Abs("./uploads")
+	if err != nil {
+		fmt.Println("Error resolving uploads path:", err)
+		return nil
+	}
+
+	if !strings.HasPrefix(absPath, absUploads) {
+		fmt.Println("Error: Path traversal attempt detected")
+		return nil
 	}
 
 	files, err := os.ReadDir(basedir)
