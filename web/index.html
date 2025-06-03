@@ -12,12 +12,27 @@
 <body>
     <main id="ui">
         <h1>JRPG Maker</h1>
-        
-        
+
+
 
 
     </main>
     <script>
+        async function askForFilesAndFoldersInUploads() {
+            try {
+                const response = await fetch("/list_uploads");
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return await response.json();
+            } catch (error) {
+                console.error("Error fetching files and folders:", error);
+            }
+        }
+
+        askForFilesAndFoldersInUploads().then(data => {
+            console.log("Files and folders in uploads:", data);
+        });
         /**
          * Asks the backend for an image file.
          * @param {string} filename - The name of the image file to request.
@@ -42,6 +57,9 @@
         askForImage("1_Interiors/48x48/Room_Builder_48x48.png").then(blob => {
             if (blob) {
                 const img = document.createElement("img");
+                img.alt = "Room Builder 48x48";
+                img.style.maxWidth = "100%"; // Ensure the image fits within the container
+                img.style.height = "auto"; // Maintain aspect ratio
                 img.src = URL.createObjectURL(blob);
                 document.getElementById("ui").appendChild(img);
             }

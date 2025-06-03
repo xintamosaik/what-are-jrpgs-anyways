@@ -7,19 +7,60 @@ import (
 )
 
 // tile_editor serves the tile editor HTML page.
-func tile_editor(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html")
+func list_uploads(w http.ResponseWriter, r *http.Request) {
+	// json
+	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Cache-Control", "no-store")
-	html := `
-<div>
-<h1>Tile Editor!</h1>
-<p>Welcome to the Tile Editor!</p>
-</div>
-`
 
-	// Serve the HTML content as a response
-	fmt.Fprint(w, html)
+	list := list_files_and_folders_of_directory("")
+	if list == nil {
+		http.Error(w, "Error reading uploads directory", http.StatusInternalServerError)
+		return
+	}
 
+	// we create two empty lists or arrays. one for files and fone for folders
+	fmt.Println("Listing uploads...")
+	files := make([]string, 0)
+	folders := make([]string, 0)
+	for _, file := range list {
+		if file.IsDir() {
+			folders = append(folders, file.Name())
+		} else {
+			files = append(files, file.Name())
+		}
+	}
+	
+
+
+	fmt.Fprint(w, "{")
+	fmt.Fprint(w, `"folders":[`)
+	for i, folder := range folders {
+		if i > 0 {
+			fmt.Fprint(w, ",")
+		}
+		fmt.Fprintf(w, `"%s"`, folder)
+	}
+	fmt.Fprint(w, `],`)
+	fmt.Fprint(w, `"files":[`)
+	if len(files) == 0 {
+		fmt.Fprint(w, "[]") // Return empty array if no files found
+		return
+	}
+	fmt.Fprint(w, "\n")
+	for i, file := range files {
+		if i > 0 {
+			fmt.Fprint(w, ",")
+		}
+		fmt.Fprintf(w, `"%s"`, file)
+	}
+	fmt.Fprint(w, "\n")
+	// Close the JSON object
+	fmt.Fprint(w, "}")
+	if len(list) == 0 {
+		fmt.Fprint(w, "[]") // Return empty array if no files found
+	}
+	fmt.Println("List of uploads served successfully")
+	w.WriteHeader(http.StatusOK)
 }
 
 // noCache is a middleware that prevents caching of responses.
@@ -117,7 +158,8 @@ func main() {
 	http.Handle("/uploads/", noCache(fs_uploads)) // Note the trailing slash
 
 	// API route
-	http.HandleFunc("/tile_editor", tile_editor)
+	http.HandleFunc("/list_uploads", list_uploads)
+
 
 	fmt.Println("Starting server on :3000")
 	if err := http.ListenAndServe(":3000", nil); err != nil {
