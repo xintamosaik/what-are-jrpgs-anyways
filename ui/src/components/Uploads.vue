@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 
 interface UploadResponse {
   folders: string[];
   files: string[];
 }
 
-interface ExtensionEmojis {
-  [key: string]: string;
-}
+type ExtensionEmojis = Record<string, string>;
 
 interface ExtensionCallbacks {
   [key: string]: (file: string) => void;
 }
+
+const uploads = ref<UploadResponse>({ folders: [], files: [] });
 
 const extensionEmojis: ExtensionEmojis = {
   "png": "🖼️",
@@ -35,65 +35,69 @@ const extensionCallbacks: ExtensionCallbacks = {
   "txt": test
 };
 
-async function askForFilesAndFoldersInUploads(): Promise<UploadResponse | undefined> {
+const getFileExtension = (file: string): string => {
+  return file.split('.').pop()?.toLowerCase() || "";
+};
+
+const getEmoji = (extension: string): string => {
+  return extensionEmojis[extension] || "";
+};
+
+async function refreshUploads(): Promise<void> {
   try {
     const response = await fetch("/list_uploads");
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    return await response.json();
+    uploads.value = await response.json();
   } catch (error) {
     console.error("Error fetching files and folders:", error);
-    return undefined;
   }
 }
 
-const refreshUploads = async (event: Event): Promise<void> => {
-  event.preventDefault();
-  const data = await askForFilesAndFoldersInUploads();
-  if (!data) return;
-
-  const uploadsDiv = document.getElementById("uploadList");
-  if (!uploadsDiv) {
-    console.error("uploadList element not found");
-    return;
+const handleFileClick = (file: string) => {
+  const extension = getFileExtension(file);
+  if (extensionCallbacks[extension]) {
+    extensionCallbacks[extension](file);
   }
-  
-  uploadsDiv.innerHTML = "";
-
-  data.folders?.forEach(folder => {
-    const folderElement = document.createElement("button");
-    folderElement.style.textAlign = "left";
-    folderElement.textContent = `${extensionEmojis["folder"]} ${folder}`;
-    uploadsDiv.appendChild(folderElement);
-  });
-
-  data.files?.forEach(file => {
-    const fileElement = document.createElement("button");
-    fileElement.style.textAlign = "left";
-    const extension = file.split('.').pop()?.toLowerCase() || "";
-    
-    if (extensionEmojis[extension]) {
-      fileElement.textContent = `${extensionEmojis[extension]} ${file}`;
-    }
-
-    if (extensionCallbacks[extension]) {
-      fileElement.onclick = () => extensionCallbacks[extension](file);
-    }
-    uploadsDiv.appendChild(fileElement);
-  });
-}
+};
 
 onMounted(() => {
-  refreshUploads(new Event('load'));
+  refreshUploads();
 });
 </script>
 
 <template>
   <div id="uploads">
     <h1>Uploads</h1>
-    <div id="uploadList" style="display:flex; flex-direction: column;"></div>
+    <div class="upload-list">
+      <button
+        v-for="folder in uploads.folders"
+        :key="folder"
+        class="upload-item"
+      >
+        {{ extensionEmojis.folder }} {{ folder }}
+      </button>
+      
+      <button
+        v-for="file in uploads.files"
+        :key="file"
+        class="upload-item"
+        @click="handleFileClick(file)"
+      >
+        {{ getEmoji(getFileExtension(file)) }} {{ file }}
+      </button>
+    </div>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.upload-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.upload-item {
+  text-align: left;
+}
+</style>
