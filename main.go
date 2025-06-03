@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-// it will serve html
+// tile_editor serves the tile editor HTML page.
 func tile_editor(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	w.Header().Set("Cache-Control", "no-store")
@@ -21,6 +21,8 @@ func tile_editor(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, html)
 
 }
+
+// noCache is a middleware that prevents caching of responses.
 func noCache(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "no-store")
@@ -28,6 +30,7 @@ func noCache(next http.Handler) http.Handler {
 	})
 }
 
+// filter_list_of_files_for_extension returns a filtered list of files that match the given extension.
 func filter_list_of_files_for_extension(list []os.DirEntry, extension string) []os.DirEntry {
 	var filtered []os.DirEntry
 	for _, file := range list {
@@ -40,10 +43,10 @@ func filter_list_of_files_for_extension(list []os.DirEntry, extension string) []
 	}
 	return filtered
 }
-/**
-* This functions returns a lost of files and folders in a given directory. It does not allow double points to prevent directory traversal attacks.
-* @param subdir string - the subdirectory to list files and folders from. If empty it will list the root directory.
-*/
+
+// list_files_and_folders_of_directory returns a list of files and folders in a given directory.
+// It prevents directory traversal attacks by disallowing double points and other unsafe characters.
+// The subdir parameter specifies the subdirectory to list files from. If empty, it lists the root directory.
 func list_files_and_folders_of_directory(subdir string) []os.DirEntry {
 	basedir := "./uploads/"
 
@@ -67,7 +70,7 @@ func list_files_and_folders_of_directory(subdir string) []os.DirEntry {
 			fmt.Println("Error: Subdirectory cannot contain backslashes.")
 			return nil
 		}
-		
+
 		if char == ':' {
 			fmt.Println("Error: Subdirectory cannot contain colons.")
 			return nil
@@ -106,7 +109,6 @@ func main() {
 	for _, file := range pngs {
 		fmt.Println("PNG File:", file.Name())
 	}
-
 
 	fs := http.StripPrefix("/", http.FileServer(http.Dir("./web/")))
 	http.Handle("/", noCache(fs))
