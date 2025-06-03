@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+import Uploads from './components/Uploads.vue'
 </script>
 
 <template>
   <div>
-
+    <Uploads  />
   </div>
 </template>
 
