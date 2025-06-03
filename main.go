@@ -5,6 +5,40 @@ import (
 	"net/http"
 	"os"
 )
+func create_files_and_folders_json(list []os.DirEntry) string {
+	if list == nil {
+		return "{}"
+	}
+	// we create two empty lists or arrays. one for files and fone for folders
+	fmt.Println("Creating JSON for files and folders...")
+	files := make([]string, 0)
+	folders := make([]string, 0)
+	for _, file := range list {
+		if file.IsDir() {
+			folders = append(folders, file.Name())
+		} else {
+			files = append(files, file.Name())
+		}
+	}
+	json := "{"
+	json += `"folders":[`
+	for i, folder := range folders {
+		if i > 0 {
+			json += ","
+		}
+		json += fmt.Sprintf(`"%s"`, folder)
+	}
+	json += `],`
+	json += `"files":[`
+	for i, file := range files {
+		if i > 0 {
+			json += ","
+		}
+		json += fmt.Sprintf(`"%s"`, file)
+	}
+	json += "]}"
+	return json
+}
 
 // tile_editor serves the tile editor HTML page.
 func list_uploads(w http.ResponseWriter, r *http.Request) {
@@ -18,49 +52,8 @@ func list_uploads(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// we create two empty lists or arrays. one for files and fone for folders
-	fmt.Println("Listing uploads...")
-	files := make([]string, 0)
-	folders := make([]string, 0)
-	for _, file := range list {
-		if file.IsDir() {
-			folders = append(folders, file.Name())
-		} else {
-			files = append(files, file.Name())
-		}
-	}
-	
-
-
-	fmt.Fprint(w, "{")
-	fmt.Fprint(w, `"folders":[`)
-	for i, folder := range folders {
-		if i > 0 {
-			fmt.Fprint(w, ",")
-		}
-		fmt.Fprintf(w, `"%s"`, folder)
-	}
-	fmt.Fprint(w, `],`)
-	fmt.Fprint(w, `"files":[`)
-	if len(files) == 0 {
-		fmt.Fprint(w, "[]") // Return empty array if no files found
-		return
-	}
-	fmt.Fprint(w, "\n")
-	for i, file := range files {
-		if i > 0 {
-			fmt.Fprint(w, ",")
-		}
-		fmt.Fprintf(w, `"%s"`, file)
-	}
-	fmt.Fprint(w, "\n")
-	// Close the JSON object
-	fmt.Fprint(w, "}")
-	if len(list) == 0 {
-		fmt.Fprint(w, "[]") // Return empty array if no files found
-	}
-	fmt.Println("List of uploads served successfully")
-	w.WriteHeader(http.StatusOK)
+	json := create_files_and_folders_json(list)
+	fmt.Fprint(w, json)
 }
 
 // noCache is a middleware that prevents caching of responses.
@@ -159,7 +152,6 @@ func main() {
 
 	// API route
 	http.HandleFunc("/list_uploads", list_uploads)
-
 
 	fmt.Println("Starting server on :3000")
 	if err := http.ListenAndServe(":3000", nil); err != nil {
