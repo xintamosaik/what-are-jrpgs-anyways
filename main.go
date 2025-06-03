@@ -1,43 +1,42 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
 )
-func create_files_and_folders_json(list []os.DirEntry) string {
+
+// Define a struct for our JSON response
+type DirectoryContents struct {
+	Folders []string `json:"folders"`
+	Files   []string `json:"files"`
+}
+
+func create_files_and_folders_json(list []os.DirEntry) (string, error) {
 	if list == nil {
-		return "{}"
+		return "{}", nil
 	}
-	// we create two empty lists or arrays. one for files and fone for folders
-	fmt.Println("Creating JSON for files and folders...")
-	files := make([]string, 0)
-	folders := make([]string, 0)
+
+	contents := DirectoryContents{
+		Folders: make([]string, 0),
+		Files:   make([]string, 0),
+	}
+
 	for _, file := range list {
 		if file.IsDir() {
-			folders = append(folders, file.Name())
+			contents.Folders = append(contents.Folders, file.Name())
 		} else {
-			files = append(files, file.Name())
+			contents.Files = append(contents.Files, file.Name())
 		}
 	}
-	json := "{"
-	json += `"folders":[`
-	for i, folder := range folders {
-		if i > 0 {
-			json += ","
-		}
-		json += fmt.Sprintf(`"%s"`, folder)
+
+	jsonBytes, err := json.Marshal(contents)
+	if err != nil {
+		return "", fmt.Errorf("error marshaling JSON: %v", err)
 	}
-	json += `],`
-	json += `"files":[`
-	for i, file := range files {
-		if i > 0 {
-			json += ","
-		}
-		json += fmt.Sprintf(`"%s"`, file)
-	}
-	json += "]}"
-	return json
+
+	return string(jsonBytes), nil
 }
 
 // tile_editor serves the tile editor HTML page.
@@ -48,11 +47,16 @@ func list_uploads(w http.ResponseWriter, r *http.Request) {
 
 	list := list_files_and_folders_of_directory("")
 	if list == nil {
-		http.Error(w, "Error reading uploads directory", http.StatusInternalServerError)
+		http.Error(w, `{"error": "Error reading uploads directory"}`, http.StatusInternalServerError)
 		return
 	}
 
-	json := create_files_and_folders_json(list)
+	json, err := create_files_and_folders_json(list)
+	if err != nil {
+		http.Error(w, `{"error": "Error creating JSON"}`, http.StatusInternalServerError)
+		return
+	}
+
 	fmt.Fprint(w, json)
 }
 
