@@ -113,6 +113,9 @@ func main() {
 	fs := http.StripPrefix("/", http.FileServer(http.Dir("./web/")))
 	http.Handle("/", noCache(fs))
 
+	fs_uploads := http.StripPrefix("/uploads/", http.FileServer(http.Dir("./uploads/")))
+	http.Handle("/uploads/", noCache(fs_uploads)) // Note the trailing slash
+
 	// API route
 	http.HandleFunc("/tile_editor", tile_editor)
 
