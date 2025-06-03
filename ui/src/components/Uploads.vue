@@ -1,28 +1,20 @@
 <script setup lang="ts">
+import { onMounted } from 'vue';
 
-</script>
-<template>
-  <div id="uploads">
-    <h1>Uploads</h1>
-
-    <div id="uploadList" style="display:flex; flex-direction: column;"></div>
-  </div>
-</template>
-
-<script lang="js">
-async function askForFilesAndFoldersInUploads() {
-  try {
-    const response = await fetch("/list_uploads:3000");
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("Error fetching files and folders:", error);
-  }
+interface UploadResponse {
+  folders: string[];
+  files: string[];
 }
 
-const extensionEmojis = {
+interface ExtensionEmojis {
+  [key: string]: string;
+}
+
+interface ExtensionCallbacks {
+  [key: string]: (file: string) => void;
+}
+
+const extensionEmojis: ExtensionEmojis = {
   "png": "🖼️",
   "jpg": "🖼️",
   "jpeg": "🖼️",
@@ -31,53 +23,77 @@ const extensionEmojis = {
   "wav": "🎵",
   "ogg": "🎵",
   "txt": "📄",
-
+  "folder": "📁"
 };
 
-function test(event) {
+const test = (): void => {
   console.log("Test function called");
   alert("This is a test function for PNG files.");
 }
-const extensionCallbacks = {
+
+const extensionCallbacks: ExtensionCallbacks = {
   "txt": test
 };
 
-document.addEventListener("DOMContentLoaded", () => {
+async function askForFilesAndFoldersInUploads(): Promise<UploadResponse | undefined> {
+  try {
+    const response = await fetch("/list_uploads");
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching files and folders:", error);
+    return undefined;
+  }
+}
 
-  refreshUploads(new Event('load'));
-});
-function refreshUploads(event) {
+const refreshUploads = async (event: Event): Promise<void> => {
   event.preventDefault();
-  askForFilesAndFoldersInUploads().then(data => {
-    const uploadsDiv = document.getElementById("uploadList");
-    uploadsDiv.innerHTML = ""; // Clear previous content
+  const data = await askForFilesAndFoldersInUploads();
+  if (!data) return;
 
-    const folders = data.folders || [];
-    const files = data.files || [];
+  const uploadsDiv = document.getElementById("uploadList");
+  if (!uploadsDiv) {
+    console.error("uploadList element not found");
+    return;
+  }
+  
+  uploadsDiv.innerHTML = "";
 
+  data.folders?.forEach(folder => {
+    const folderElement = document.createElement("button");
+    folderElement.style.textAlign = "left";
+    folderElement.textContent = `${extensionEmojis["folder"]} ${folder}`;
+    uploadsDiv.appendChild(folderElement);
+  });
 
-    folders.forEach(folder => {
-      const folderElement = document.createElement("button");
-      folderElement.style.textAlign = "left"; // Align text to the left
-      folderElement.textContent = `${extensionEmojis["folder"]} ${folder}`;
+  data.files?.forEach(file => {
+    const fileElement = document.createElement("button");
+    fileElement.style.textAlign = "left";
+    const extension = file.split('.').pop()?.toLowerCase() || "";
+    
+    if (extensionEmojis[extension]) {
+      fileElement.textContent = `${extensionEmojis[extension]} ${file}`;
+    }
 
-      uploadsDiv.appendChild(folderElement);
-    });
-
-    files.forEach(file => {
-      const fileElement = document.createElement("button");
-      fileElement.style.textAlign = "left"; // Align text to the left
-      const extension = file.split('.').pop().toLowerCase();
-      if (extensionEmojis[extension]) {
-        fileElement.textContent = `${extensionEmojis[extension]} ${file}`;
-      } // we only allow the extensions we have emojis for
-
-      if (extensionCallbacks[extension]) {
-        fileElement.onclick = () => extensionCallbacks[extension](file);
-      }
-      uploadsDiv.appendChild(fileElement);
-    });
+    if (extensionCallbacks[extension]) {
+      fileElement.onclick = () => extensionCallbacks[extension](file);
+    }
+    uploadsDiv.appendChild(fileElement);
   });
 }
+
+onMounted(() => {
+  refreshUploads(new Event('load'));
+});
 </script>
+
+<template>
+  <div id="uploads">
+    <h1>Uploads</h1>
+    <div id="uploadList" style="display:flex; flex-direction: column;"></div>
+  </div>
+</template>
+
 <style scoped></style>

@@ -68,19 +68,19 @@ func noCache(next http.Handler) http.Handler {
 	})
 }
 
-// filter_list_of_files_for_extension returns a filtered list of files that match the given extension.
-func filter_list_of_files_for_extension(list []os.DirEntry, extension string) []os.DirEntry {
-	var filtered []os.DirEntry
-	for _, file := range list {
-		if file.IsDir() {
-			continue // Skip directories
-		}
-		if len(file.Name()) >= len(extension) && file.Name()[len(file.Name())-len(extension):] == extension {
-			filtered = append(filtered, file)
-		}
-	}
-	return filtered
-}
+// // filter_list_of_files_for_extension returns a filtered list of files that match the given extension.
+// func filter_list_of_files_for_extension(list []os.DirEntry, extension string) []os.DirEntry {
+// 	var filtered []os.DirEntry
+// 	for _, file := range list {
+// 		if file.IsDir() {
+// 			continue // Skip directories
+// 		}
+// 		if len(file.Name()) >= len(extension) && file.Name()[len(file.Name())-len(extension):] == extension {
+// 			filtered = append(filtered, file)
+// 		}
+// 	}
+// 	return filtered
+// }
 
 // list_files_and_folders_of_directory returns a list of files and folders in a given directory.
 // It prevents directory traversal attacks by disallowing double points and other unsafe characters.
@@ -133,22 +133,8 @@ func list_files_and_folders_of_directory(subdir string) []os.DirEntry {
 }
 
 func main() {
-	// try the function to list files and folders in the uploads directory
-	rootfiles := list_files_and_folders_of_directory("1_Interiors/16x16")
-	for _, file := range rootfiles {
-		if file.IsDir() {
-			fmt.Println("Directory:", file.Name())
-		} else {
-			fmt.Println("File:", file.Name())
-		}
-	}
-	fmt.Println("Listing files and folders in the uploads directory:")
-	pngs := filter_list_of_files_for_extension(rootfiles, ".png")
-	for _, file := range pngs {
-		fmt.Println("PNG File:", file.Name())
-	}
 
-	fs := http.StripPrefix("/", http.FileServer(http.Dir("./web/")))
+	fs := http.StripPrefix("/", http.FileServer(http.Dir("ui/dist")))
 	http.Handle("/", noCache(fs))
 
 	fs_uploads := http.StripPrefix("/uploads/", http.FileServer(http.Dir("./uploads/")))
