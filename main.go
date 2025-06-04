@@ -1,12 +1,14 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
+	"go-web-rpg-app/components" // Import the generated hello component
 )
 
 // Define a struct for our JSON response
@@ -129,8 +131,14 @@ func list_files_and_folders_of_directory(subdir string) []os.DirEntry {
 	return files
 }
 
+func fixi_hello() {
+	component := components.Hello("John")
+	component.Render(context.Background(), os.Stdout)
+}
+
 func main() {
 
+	fixi_hello() // Call the generated hello component
 	fs := http.StripPrefix("/", http.FileServer(http.Dir("ui/dist")))
 	http.Handle("/", noCache(fs))
 
