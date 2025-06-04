@@ -16,9 +16,7 @@
             --border-common: 2px solid hotpink
         }
 
-        .common-border {
-            border: var(--border-common);
-        }
+
 
         .flex-column {
             display: flex;
@@ -69,16 +67,16 @@
         </menu>
     </header>
 
-    <main class="common-border" style="display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr;">
-        <div class="common-border" id="tileset">
+    <main style="display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr;">
+        <div id="tileset">
             tileset
 
         </div>
-        <div class="common-border" id="map">
+        <div id="map">
             map
         </div>
     </main>
-    <footer class="common-border">
+    <footer style="border-top: var(--border-common);">
         footer
     </footer>
 </body>
