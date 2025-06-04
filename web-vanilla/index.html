@@ -11,8 +11,76 @@
 
     <script src="fixi-0.6.5.js"></script>
     <script src="scripts.js"></script>
+    <style>
+        :root {
+            --border-common: 2px solid hotpink
+        }
+
+        .common-border {
+            border: var(--border-common);
+        }
+
+        .flex-column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        [popover].submenu {
+            margin: 0;
+            top: anchor(bottom);
+        }
+
+        #file {
+            anchor-name: --anchor_file;
+        }
+
+        #file-dialog {
+            position-anchor: --anchor_file;
+        }
+    </style>
 </head>
 
-<body></body>
+<body style="display: grid; grid-template-rows: auto 1fr auto; height: 100vh; margin: 0;">
+    <header class="common-border">
+        <menu
+            style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-block-start: 0; margin-block-end: 0; padding-inline-start: 0;">
+            <input type="button" id="file" value="File" popovertarget="file-dialog" popoveraction="toggle">
+            <menu id="file-dialog" class="submenu" popover>
+                <div class="flex-column">
+                    <input type="button" value="New" id="new">
+                    <input type="button" value="Open" id="open">
+                    <input type="button" value="Save" id="save">
+                    <input type="button" value="Save As" id="save-as">
+                    <input type="button" value="Export" id="export">
+                    <input type="button" value="Import" id="import">
+                    <input type="button" value="Close" id="close-dialog">
+                    <input type="button" value="Exit" id="exit">
+                </div>
+            </menu>
+            <input type="button" id="edit" value="Edit">
+            <input type="button" id="view" value="View">
+            <input type="button" id="help" value="Help">
+            <input type="button" id="settings" value="Settings">
+            <input type="button" id="about" value="About">
+            <input type="button" id="help" value="Help">
+            <input type="button" id="debug" value="Debug">
+            <input type="button" id="devtools" value="DevTools">
+            <input type="button" id="close" value="x">
+        </menu>
+    </header>
+
+    <main class="common-border" style="display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr;">
+        <div class="common-border" id="tileset">
+            tileset
+
+        </div>
+        <div class="common-border" id="map">
+            map
+        </div>
+    </main>
+    <footer class="common-border">
+        footer
+    </footer>
+</body>
 
 </html>
