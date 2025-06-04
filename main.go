@@ -15,7 +15,7 @@ type DirectoryContents struct {
 	Files   []string `json:"files"`
 }
 
-func create_files_and_folders_json(list []os.DirEntry) (string, error) {
+func compile_files_and_folders_json(list []os.DirEntry) (string, error) {
 	if list == nil {
 		return "{}", nil
 	}
@@ -41,7 +41,10 @@ func create_files_and_folders_json(list []os.DirEntry) (string, error) {
 	return string(jsonBytes), nil
 }
 
-// tile_editor serves the tile editor HTML page.
+// list_uploads handles the /list_uploads API endpoint.
+// It lists all files and folders in the specified uploads directory.
+// The folder parameter can be used to specify a subdirectory within uploads.
+// If no folder is specified, it lists the root of the uploads directory.
 func list_uploads(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Cache-Control", "no-store")
@@ -56,7 +59,7 @@ func list_uploads(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	json, err := create_files_and_folders_json(list)
+	json, err := compile_files_and_folders_json(list)
 	if err != nil {
 		http.Error(w, `{"error": "Error creating JSON"}`, http.StatusInternalServerError)
 		return
