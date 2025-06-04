@@ -1,13 +1,13 @@
 package main
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
+	"github.com/a-h/templ"
 	"go-web-rpg-app/components" // Import the generated hello component
 )
 
@@ -131,22 +131,17 @@ func list_files_and_folders_of_directory(subdir string) []os.DirEntry {
 	return files
 }
 
-func fixi_hello() {
-	component := components.Hello("John")
-	component.Render(context.Background(), os.Stdout)
-}
 
 func main() {
 
-	fixi_hello() // Call the generated hello component
-	fs := http.StripPrefix("/", http.FileServer(http.Dir("ui/dist")))
+	component := components.Hello("John")
+	http.Handle("/hello", templ.Handler(component))
+
+	fs := http.StripPrefix("/", http.FileServer(http.Dir("web-vanilla")))
 	http.Handle("/", noCache(fs))
 
 	fs_uploads := http.StripPrefix("/uploads/", http.FileServer(http.Dir("./uploads/")))
 	http.Handle("/uploads/", noCache(fs_uploads)) // Note the trailing slash
-
-	// API route
-	http.HandleFunc("/list_uploads", list_uploads)
 
 	fmt.Println("Starting server on :3000")
 	if err := http.ListenAndServe(":3000", nil); err != nil {
