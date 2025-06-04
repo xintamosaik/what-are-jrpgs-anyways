@@ -137,6 +137,9 @@ func main() {
 	component := components.Hello("John")
 	http.Handle("/hello", templ.Handler(component))
 
+	main := components.Main("Welcome to the Go Web RPG App")
+	http.Handle("/main", templ.Handler(main))
+
 	fs := http.StripPrefix("/", http.FileServer(http.Dir("web-vanilla")))
 	http.Handle("/", noCache(fs))
 
