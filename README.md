@@ -1,5 +1,9 @@
 # JRPG Maker: README
-
+# notes
+- fx-swap: innerHTML, outerHTML*, beforebegin, afterbegin, beforeend, afterend, or property `className` or `value`
+- fx-method	GET*, POST, PUT, DELETE, PATCH, HEAD, OPTIONS, or TRACE
+- fx-trigger	submit* (form), change* (input) & click* (other), mouseover, mouseout, focus, blur, keyup, keydown, keypress, input, reset, select, touchstart, touchmove, touchend, touchcancel
+- fx-ignore. This element and its childs(?) will be ignored
 ## Project Description
 
 A web-native, progressively-enhanced tool for creating tile-based maps and interactive scenes, initially focused on JRPG-style games. The tool is designed for quick, zero-install play and gradual onboarding into deeper customization and self-hosting.
