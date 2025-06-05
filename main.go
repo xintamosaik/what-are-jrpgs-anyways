@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"image/png"
 	"strings"
-
 	"github.com/a-h/templ"
 )
 
@@ -139,6 +139,21 @@ func main() {
 
 	main := components.Main("Welcome to the Go Web RPG App")
 	http.Handle("/main", templ.Handler(main))
+
+	test_image := "uploads/1_Interiors/48x48/Theme_Sorter_Black_Shadow_48x48/1_Generic_Black_Shadow_48x48.png"
+	// func DecodeConfig(r io.Reader) (image.Config, error)
+	file, err := os.Open(test_image)
+	if err != nil {
+		fmt.Println("Error opening PNG file:", err)
+		return
+	}
+	defer file.Close()
+	png_config, err := png.DecodeConfig(file)
+	if err != nil {
+		fmt.Println("Error decoding PNG config:", err)
+		return
+	}
+	fmt.Println("PNG Width:", png_config.Width, "Height:", png_config.Height)
 
 	tileset_editor := components.TilesetEdit("uploads/1_Interiors/48x48/Theme_Sorter_Black_Shadow_48x48/1_Generic_Black_Shadow_48x48.png", "48")
 	http.Handle("/show_tileset_editor", templ.Handler(tileset_editor))
