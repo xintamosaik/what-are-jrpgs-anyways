@@ -1,24 +1,36 @@
 package components
+templ tileset_config_form(name string, size string) {
+<form action="save_tileset_config" method="post" class="flex-column" style="padding: 1rem; gap: 0.5rem;">
+	<label for="name">Tileset Name:</label>
+	<input type="text" id="name" value={ name } name="name" required readonly>
 
-templ TilesetEdit(file string, size string) {
+	<label for="tileset-size">Tileset Size:</label>
+	<input type="number" id="size" name="size" value={ size } min="1" required>
+
+	<button type="submit">Save Tileset</button>
+</form>
+}
+
+templ tileset_edit(file string, size string, width int, height int) {
+		<!-- We have to slice the tileset into sizexsize tiles and display then on canvas -->
+		<p>
+			Editing Tileset: {file} with size {size} and dimensions {width}x{height}
+		</p>
+		<canvas id="tileset-canvas" width="512" height="512"></canvas>
+		
+}
+templ TilesetEdit(file string, size string, width int, height int) {
+	<script>
+		const file = {file};
+		const size = {size};
+		const width = {width};
+		const height = {height};
+	</script>
+	<script src="/js/tileset_edit.js"></script>
 <div id="left" style="overflow-y: scroll;" style="max-height: 100%;">
-	<img src={ file } alt=""
-		srcset="">
-
+	@tileset_edit(file, size, width, height)
 </div>
 <div id="right">
-	<form action="save_tileset_config" method="post" class="flex-column" style="padding: 1rem; gap: 0.5rem;">
-		<label for="name">Tileset Name:</label>
-		<input type="text" id="name"
-			value={ file }
-			name="name"
-			required 
-			readonly>
-
-		<label for="tileset-size">Tileset Size:</label>
-		<input type="number" id="size" name="size" value="48" min="1" value={ size } required>
-
-		<button type="submit">Save Tileset</button>
-	</form>
+	@tileset_config_form(file, size)
 </div>
 }

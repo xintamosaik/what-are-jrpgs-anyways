@@ -6,8 +6,8 @@ import (
 	"go-web-rpg-app/components" // Import the generated hello component
 	"net/http"
 	"os"
-	"path/filepath"
 	"image/png"
+	"path/filepath"
 	"strings"
 	"github.com/a-h/templ"
 )
@@ -17,6 +17,7 @@ type DirectoryContents struct {
 	Folders []string `json:"folders"`
 	Files   []string `json:"files"`
 }
+
 
 func compile_files_and_folders_json(list []os.DirEntry) (string, error) {
 	if list == nil {
@@ -51,6 +52,7 @@ func compile_files_and_folders_json(list []os.DirEntry) (string, error) {
 func list_uploads(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Cache-Control", "no-store")
+
 
 	// Get the folder parameter from query string
 	folder := r.URL.Query().Get("folder")
@@ -141,21 +143,18 @@ func main() {
 	http.Handle("/main", templ.Handler(main))
 
 	test_image := "uploads/1_Interiors/48x48/Theme_Sorter_Black_Shadow_48x48/1_Generic_Black_Shadow_48x48.png"
-	// func DecodeConfig(r io.Reader) (image.Config, error)
 	file, err := os.Open(test_image)
 	if err != nil {
-		fmt.Println("Error opening PNG file:", err)
+		fmt.Println("Error opening image file:", err)
 		return
 	}
 	defer file.Close()
-	png_config, err := png.DecodeConfig(file)
+	dimensions, err := png.DecodeConfig(file)
 	if err != nil {
-		fmt.Println("Error decoding PNG config:", err)
+		fmt.Println("Error decoding image file:", err)
 		return
 	}
-	fmt.Println("PNG Width:", png_config.Width, "Height:", png_config.Height)
-
-	tileset_editor := components.TilesetEdit("uploads/1_Interiors/48x48/Theme_Sorter_Black_Shadow_48x48/1_Generic_Black_Shadow_48x48.png", "48")
+	tileset_editor := components.TilesetEdit(test_image, "48", dimensions.Width, dimensions.Height)
 	http.Handle("/show_tileset_editor", templ.Handler(tileset_editor))
 
 	fs := http.StripPrefix("/", http.FileServer(http.Dir("web-vanilla")))
