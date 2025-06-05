@@ -55,7 +55,7 @@
                     <input type="button" value="Exit" id="exit">
                 </div>
             </menu>
-            <input type="button" id="edit" value="Edit">
+            <input type="button" id="edit" value="Edit" fx-action="show_tileset_editor" fx-target="main" fx-swap="innerHTML">
             <input type="button" id="view" value="View">
             <input type="button" id="help" value="Help">
             <input type="button" id="settings" value="Settings">
@@ -68,25 +68,7 @@
     </header>
 
     <main style="display: grid; grid-template-columns: 1fr 1fr;">
-        <div id="left" style="overflow-y: scroll;" style="max-height: 100%;">
-            <img src="uploads/1_Interiors/48x48/Theme_Sorter_Black_Shadow_48x48/1_Generic_Black_Shadow_48x48.png" alt="" srcset="">
-
-        </div>
-        <div id="right">
-            <form action="save_tileset_config" method="post" class="flex-column" style="padding: 1rem; gap: 0.5rem;">
-                <label for="name">Tileset Name:</label>
-                <input 
-                    type="text" 
-                    id="name" 
-                    value="1_Interiors/48x48/Theme_Sorter_Black_Shadow_48x48/1_Generic_Black_Shadow_48x48.png"
-                    name="name" required readonly>
-
-                <label for="tileset-size">Tileset Size:</label>
-                <input type="number" id="size" name="size" value="48" min="1" value="48" required>
-
-                <button type="submit">Save Tileset</button>
-            </form>
-        </div>
+        
     </main>
     <footer style="border-top: var(--border-common);">
         footer

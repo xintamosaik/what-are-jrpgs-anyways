@@ -3,12 +3,13 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"go-web-rpg-app/components" // Import the generated hello component
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
+
 	"github.com/a-h/templ"
-	"go-web-rpg-app/components" // Import the generated hello component
 )
 
 // Define a struct for our JSON response
@@ -131,7 +132,6 @@ func list_files_and_folders_of_directory(subdir string) []os.DirEntry {
 	return files
 }
 
-
 func main() {
 
 	component := components.Hello("John")
@@ -139,6 +139,9 @@ func main() {
 
 	main := components.Main("Welcome to the Go Web RPG App")
 	http.Handle("/main", templ.Handler(main))
+
+	tileset_editor := components.TilesetEdit("uploads/1_Interiors/48x48/Theme_Sorter_Black_Shadow_48x48/1_Generic_Black_Shadow_48x48.png", "48")
+	http.Handle("/show_tileset_editor", templ.Handler(tileset_editor))
 
 	fs := http.StripPrefix("/", http.FileServer(http.Dir("web-vanilla")))
 	http.Handle("/", noCache(fs))

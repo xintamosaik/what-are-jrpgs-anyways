@@ -1,0 +1,24 @@
+package components
+
+templ TilesetEdit(file string, size string) {
+<div id="left" style="overflow-y: scroll;" style="max-height: 100%;">
+	<img src={ file } alt=""
+		srcset="">
+
+</div>
+<div id="right">
+	<form action="save_tileset_config" method="post" class="flex-column" style="padding: 1rem; gap: 0.5rem;">
+		<label for="name">Tileset Name:</label>
+		<input type="text" id="name"
+			value={ file }
+			name="name"
+			required 
+			readonly>
+
+		<label for="tileset-size">Tileset Size:</label>
+		<input type="number" id="size" name="size" value="48" min="1" value={ size } required>
+
+		<button type="submit">Save Tileset</button>
+	</form>
+</div>
+}
